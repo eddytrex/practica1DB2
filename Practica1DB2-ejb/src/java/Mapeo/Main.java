@@ -4,6 +4,8 @@
  */
 package Mapeo;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author eddytrex
@@ -14,6 +16,14 @@ public class Main {
     {
             Modelo a=new Modelo();
             a.cargarEntidades();
+           // Entidad prueba=a.BuscarEntidad("agencia");
+            
+            
+            ArrayList<String> dimensiones=a.getDimensiones("detallefactura");
+            
+            
+            int c;
+            c=1+1;
     }
     
 }

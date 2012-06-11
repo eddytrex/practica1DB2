@@ -57,7 +57,45 @@ public class Modelo {
          return result;
      }
      
+     public queryDim getDimension(ForenKey relacion)
+     {    
+         queryDim result=new queryDim();
+         
+         Entidad origen=this.BuscarEntidad(relacion.tablaPadre);
+         if(origen!=null)
+         {    
+             result.addEncabezado(origen.GetCampos());
+             result.addTabas(origen.nombre);
+             Iterator<ForenKey>  FKs = origen.getFK().iterator();
+             while(FKs.hasNext())
+             {
+                 ForenKey temp=FKs.next();
+                 result.addCondicion(temp.GetSubCondicion());
+                 queryDim tempDim=getDimension(temp);      
+                 result=result.Funcionar(tempDim);                 
+             }             
+         }
+         return result;
+     }
      
-     
-     
+     public ArrayList<String> getDimensiones(String entidadHechos)
+     {
+         ArrayList<String> dimensiones=new ArrayList();
+         Entidad hechos=this.BuscarEntidad(entidadHechos);
+         if(hechos!=null)
+         {
+           ArrayList<ForenKey> FK=new ArrayList();
+           FK=hechos.getFK();
+            Iterator<ForenKey> i = FK.iterator();
+            int num = 0;
+            while (i.hasNext())
+            {
+                num++;
+                queryDim tempQueryDim=this.getDimension(i.next());
+                dimensiones.add(tempQueryDim.getView("Dimencion_0"+num));
+            }
+         
+         }         
+         return dimensiones;
+     }
 }

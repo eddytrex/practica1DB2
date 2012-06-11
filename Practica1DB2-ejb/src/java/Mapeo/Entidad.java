@@ -20,6 +20,11 @@ public class Entidad {
      ArrayList<String[]> PK=new ArrayList();
      
      
+     public ArrayList<ForenKey> getFK()
+     {
+         return FK;
+     }
+     
      public Entidad(String Nombre)
      {
          this.nombre=Nombre;
@@ -69,7 +74,7 @@ public class Entidad {
      }
      
      public void setForenKey () {
-         String consulta=" SELECT a.column_name Campo_Origen , b.column_name Campo_Destino , a.table_name Tabla_Origen  "
+         /*String consulta=" SELECT a.column_name Campo_Origen , b.column_name Campo_Destino , a.table_name Tabla_Origen  "
                                     + " FROM information_schema.constraint_column_usage a, information_schema.key_column_usage b, information_schema.table_constraints c  "
                                     + " WHERE a.constraint_name=b.constraint_name and c.constraint_name=a.constraint_name and c.constraint_type='FOREIGN KEY'"
                                     + " and b.table_name=\'"+nombre+"\';";
@@ -80,8 +85,39 @@ public class Entidad {
              while(listaFK.hasNext())
              {
                  FK.add(new ForenKey(listaFK.next()));
-             }
+             }*/
+         
+         String consulta="SELECT  a.table_name Tabla_Origen  "
+                 + "FROM information_schema.constraint_column_usage a, information_schema.key_column_usage b, information_schema.table_constraints c  "
+                 + "WHERE a.constraint_name=b.constraint_name and c.constraint_name=a.constraint_name and c.constraint_type='FOREIGN KEY' and b.table_name=\'"+nombre+"\';";
+
+         ArrayList<String[]> query = new Sql ().consulta(consulta);
+         Iterator<String[]> filaTablasConFK = query.iterator();       
+         filaTablasConFK.next();
+         while (filaTablasConFK.hasNext())
+         {
+              FK.add(new ForenKey( filaTablasConFK.next()[0],nombre));
+         }        
      }
      
+     public String GetCampos()
+     {
+          String campos="";
+          Iterator<String[]> atributos = this.atributos.iterator();
+          while(atributos.hasNext())
+          {
+              if(!campos.equals(""))
+              {
+                 String tempAtributo=atributos.next()[0];
+              campos=campos+","+this.nombre+"."+tempAtributo+" AS "+this.nombre+"_"+tempAtributo;
+              }
+              else
+              {
+                  String tempAtributo=atributos.next()[0];
+                 campos=this.nombre+"."+tempAtributo+" AS "+this.nombre+"_"+tempAtributo;
+              }
+          }
+         return campos;
+     }
      
 }
